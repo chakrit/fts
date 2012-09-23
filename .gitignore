@@ -1,0 +1,9 @@
+
+# mac stuff
+.DS_Store
+
+# node.js stuff
+node_modules
+npm-debug.log
+v8.log
+
