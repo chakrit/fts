@@ -1,7 +1,7 @@
 {
   "name": "fts",
   "version": "0.1.0",
-  "description": "Redis-backed fulltext search for node.js that supports international characters.",
+  "description": "Fast fuzzy unicode full-text-search backed with redis.",
   "main": "index.js",
   "scripts": {
     "test": "mocha --compilers coffee:coffee-script --reporter spec --watch test/*"
