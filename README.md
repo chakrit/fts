@@ -47,11 +47,11 @@ and use with:
     });
 
 
+### libicu dependency
+
 FTS uses [node-stringprep](https://github.com/astro/node-stringprep) and
 [icu-wordsplit](https://github.com/chakrit/node-icu-wordsplit) for unicode support. This means
-that you will need to have a working libicu binaries installed on your machine.
-
-Depending on where you're developing node.js one of the following command will install a
+that you will need to have a working libicu binaries installed on your machine. Depending on where you're developing node.js one of the following command will install a
 working copy of libicu binaries and data files into your system:
 
     # ubuntu and debian-based systems
@@ -86,7 +86,7 @@ When `index` is called, fts does the following:
 
 ## Main API
 
-#### `indexer.use( [prefix], redis-client )`
+#### indexer.use( [prefix], redis-client )
 
 Setup the indexer to use the specified `prefix` and `redis-client`.
 You must call this function before using any of the fts module functionality.
@@ -95,7 +95,7 @@ You must call this function before using any of the fts module functionality.
 * `redis-client` - The redis client to use. Any object with interface compatible with the de facto
   [redis module](https://github.com/mranney/node_redis) is fine.
 
-#### `indexer.index( id, items, callback )`
+#### indexer.index( id, items, callback )
 
 Add one or more `items` to the index with identifier `id` and then calls `callback`.
 
@@ -103,11 +103,11 @@ Add one or more `items` to the index with identifier `id` and then calls `callba
 * `items` - Content string or array of strings to index
 * `callback` - Standard callback with one error
 
-#### `indexer.clear( callback )`
+#### indexer.clear( callback )
 
 Removes all entries from the index effectively resetting it to initial state.
 
-#### `indexer.query( query, callback )`
+#### indexer.query( query, callback )
 
 Queries the index using the string `query`.
 
@@ -120,7 +120,7 @@ Queries the index using the string `query`.
 These APIs are provided in case you need more fine-grained control of the indexes
 but should not need to to be used in most cases.
 
-#### `indexer.addKey( id, key, weight, callback )`
+#### indexer.addKey( id, key, weight, callback )
 
 Adds `id` to search key `key` with weight `weight` and then calls `callback` (optional).
 
@@ -128,7 +128,7 @@ Adds `id` to search key `key` with weight `weight` and then calls `callback` (op
 * `key` - search key to add the document to, this will be normalized.
 * `weight` - weight to give to this document for this particular search key.
 
-#### `indexer.removeKey( id, key, callback )`
+#### indexer.removeKey( id, key, callback )
 
 Removes `id` from the search key `key` regardless of weight.
 
