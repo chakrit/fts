@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git://github.com/chakrit/fts.git"
   },
-  "bugs": "https://github.com/chakrit/fts/issues"
+  "bugs": "https://github.com/chakrit/fts/issues",
   "keywords": [
     "fulltext",
     "search",
