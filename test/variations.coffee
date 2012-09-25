@@ -24,6 +24,22 @@ do ->
     before -> @var = require '../variations'
     after -> delete @var
 
+    describe 'normalizeWords()', ->
+      before -> @normalize = @var.normalizeWords
+      after -> delete @normalize
+
+      checkFalsyInputs 'normalize'
+
+      # sample taken from the stringprep module
+      it "should returns ['äffchen'] for string 'Äffchen' input", ->
+        expect(@normalize 'Äffchen').to.eql(['äffchen'])
+
+      it "should returns ['äffchen'] for array ['Äffchen'] input", ->
+        expect(@normalize ['Äffchen']).to.eql(['äffchen'])
+
+      it "should returns ['äffchen', 'ää'] for array ['Äffchen', 'ÄÄ'] input", ->
+        expect(@normalize ['Äffchen', 'ÄÄ']).to.eql(['äffchen', 'ää'])
+
     describe 'splitWords()', ->
       before -> @split = @var.splitWords
       after -> delete @split
@@ -125,13 +141,4 @@ do ->
 
           expect(t[0]).to.be.lt(1) # seconds
           expect(t[1]).to.be.lt(1000000 * 100) # nanoseconds
-
-    describe 'permuteKeys()', ->
-      before -> @permute = @var.permuteKeys
-      after -> delete @permute
-
-      it "should works", ->
-        @permute 'Bangkok Hospital'
-
-      # TODO: More peruteKeys test, not sure how yet.
 

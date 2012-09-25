@@ -1,11 +1,24 @@
 
 # variations - Generate search variations from given word
+# TODO: Tests for the string normalization
 module.exports = do ->
 
   _ = require 'underscore'
   splitWords = require 'icu-wordsplit'
+  normalize = do ->
+    StringPrep = require('node-stringprep').StringPrep
+    prep = new StringPrep('nameprep')
+
+    _.bindAll(prep)
+    return prep.prepare
 
   return vars =
+    normalizeWords: (words) ->
+      return [] if !words? || words.length == 0
+      words = [words] if typeof words == 'string'
+
+      return (normalize(word) for word in words)
+
     splitWords: (word) ->
       return [] if !word? || word.length == 0
       splitWords(word)
@@ -57,16 +70,3 @@ module.exports = do ->
 
       return results
 
-    # TODO: Test this.
-    permuteKeys: (string) ->
-      words = vars.splitWords(string)
-      words = vars.permuteWords(words)
-      words = (vars.permuteTypos(word) for word in words)
-      words = _.flatten words
-      words = (word.toLowerCase() for word in words)
-
-      ###
-      sort words by length/stirng.length
-      could owrk since this makes a preferrence for
-      shorter result
-      ###
