@@ -139,3 +139,14 @@ Removes `id` from the search key `key` regardless of weight.
 
 BSD
 
+## TODO / CONTRIBUTE
+
+* Redis ZSETs can actually be replicated pretty easily using other kinds of databases such as MongoDB or Sqlite3
+  so a different kind of backend store would probably benefits a lot of people.
+
+* Reverse lookup (i.e. which search terms contains the document id)
+
+* Ability to remove a document from the index.
+
+* Search quality tests and/or more tests in general. I want this module to be rock solid.
+
