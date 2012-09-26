@@ -34,7 +34,7 @@ leakCheck = (action) ->
 
 
 # describe tests
-describe 'Leaks test', ->
+describe 'Leaks/perf test', ->
 
   describe 'variations module', ->
     before -> @var = require '../variations'
