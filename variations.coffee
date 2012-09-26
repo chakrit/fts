@@ -23,9 +23,10 @@ module.exports = do ->
       return [] if !word? || word.length == 0
       splitWords(word)
 
-    permuteWords: (words) ->
+    permuteWords: (words, degree) ->
       return [] if !words?
       return [words[0]] if words.length == 1
+      degree ?= 3
 
       (_permute = (words, idx) ->
         return [] if idx == words.length
@@ -34,7 +35,10 @@ module.exports = do ->
         results = [word]
 
         # generate permutation from current word down
-        for i in [idx + 1 .. words.length - 1] by 1
+        from = idx + 1
+        to = Math.min(words.length, degree) - 1
+
+        for i in [from .. to] by 1
           word += words[i]
           results.push word
 

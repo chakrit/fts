@@ -72,6 +72,22 @@ do ->
         result = (@permute "abc").sort()
         expect(result).to.eql ['a', 'ab', 'abc', 'b', 'bc', 'c'].sort()
 
+      it "should not include four-word result for five-words input with default degree (3)", ->
+        result = (@permute "a|b|c|d|e".split('|')).sort()
+        expect(result).to.not.include 'abcd'
+
+      describe "with degree 4", -> # default is 3
+        before -> @degree = 4
+        after -> delete @degree
+
+        it "should include four-word result for five-words input", ->
+          result = (@permute "a|b|c|d|e".split('|'), 4).sort()
+          expect(result).to.include 'abcd'
+
+        it "should not include five-word result for five-words input", ->
+          result = (@permute "a|b|c|d|e".split('|'), 4).sort()
+          expect(result).to.not.include 'abcde'
+
     describe 'permuteTypos()', ->
       before -> @permute = @var.permuteTypos
       after -> delete @permute
