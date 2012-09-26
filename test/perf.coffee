@@ -29,7 +29,7 @@ leakCheck = (action) ->
       @timeout 5000
       a.forEach [1..num], ((n, next) => action.call(this, next)), done
 
-  for i in [1..7]
+  for i in [1..6]
     iterate Math.pow(10, i)
 
 
