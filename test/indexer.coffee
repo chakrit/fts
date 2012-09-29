@@ -38,6 +38,23 @@ do ->
       before -> @indexer = new @Indexer
       after -> delete @indexer
 
+      describe 'degree hash', ->
+        before -> @degree = @indexer.degree
+        after -> delete @degree
+
+        it 'should be exported', ->
+          expect(@degree).to.be.ok.and.is.an('object')
+
+        it 'should contains default value for "words" key', ->
+          expect(@degree).to.have.property('words')
+            .that.is.a('number')
+
+        it 'should contains default value for "typos" key', ->
+          expect(@degree).to.have.property('typos')
+            .that.is.a('number')
+
+        # TODO: Test that the values are respected
+
       describe 'use()', ->
         before -> @use = @indexer.use
         after -> delete @use

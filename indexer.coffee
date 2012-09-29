@@ -17,6 +17,9 @@ module.exports = do ->
     constructor: ->
       @client = null
       @prefix = null
+      @degree =
+        words: 3 # should match variations.permuteWords default
+        typos: 5 # should match variations.permtueTypos default
 
     use: (prefix, client) =>
       if !client? and typeof prefix == 'object'
@@ -77,7 +80,7 @@ module.exports = do ->
           score -= 50 if score > 400
           typoScore = score
 
-          typos = vars.permuteTypos word
+          typos = vars.permuteTypos word, @degree.typos
           for typo in typos
             typoScore -= 5 if typoScore > 400
             indexes.push [id, typo, typoScore]
@@ -86,7 +89,7 @@ module.exports = do ->
         # [800..600] by -50 permutation
         # first permutation > last permutation
         score = 850
-        perms = vars.permuteWords(words)
+        perms = vars.permuteWords words, @degree.words
         for perm in perms
           score -= 50 if score > 600
           indexes.push [perm, score, id]
@@ -98,7 +101,7 @@ module.exports = do ->
           score -= 50 if score > 200
           typoScore = score
 
-          typos = vars.permuteTypos perm
+          typos = vars.permuteTypos perm, @degree.typos
           for typo in typos
             typoScore -= 5 if typoScore > 200
             indexes.push [id, typo, typoScore]
