@@ -28,24 +28,18 @@ module.exports = do ->
       return [words[0]] if words.length == 1
       degree ?= 3
 
-      return (permute = (words, idx) ->
-        return [] if idx == words.length
+      results = []
+      for i in [0 .. words.length] by 1
+        word = ''
 
-        word = words[idx]
-        results = [word]
-
-        # generate permutation from current word down
-        from = idx + 1
-        to = Math.min(words.length, idx + degree) - 1
-        for i in [from .. to] by 1
-          word += words[i]
+        # permute from current word down to last word (or max degree)
+        from = i
+        to = Math.min(words.length, i + degree) - 1
+        for j in [from .. to] by 1
+          word += words[j]
           results.push word
 
-        # add results from next level
-        results.push.apply results, permute(words, idx + 1)
-        return results
-
-      )(words, 0)
+      return results
 
     permuteTypos: (word, degree) ->
       return [] if !word? || word.length == 0
