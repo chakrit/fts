@@ -49,7 +49,7 @@ module.exports = do ->
 
     permuteTypos: (word, degree) ->
       return [] if !word? || word.length == 0
-      degree ?= 2
+      degree ?= 7 # so we can more results from partial match
 
       # cache everything early on so we don't slow down during tight loops
       uniq = { }
