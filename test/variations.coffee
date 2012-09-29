@@ -81,14 +81,36 @@ do ->
           result = (@permute "a|b|c|d|e".split('|'), 2).sort()
           expect(result).to.include 'de'
 
+        it "should not include three-words result for five-words input", ->
+          result = (@permute "a|b|c|d|e".split('|'), 2).sort()
+          expect(result).to.not.include 'bcd'
+
       describe "with degree 4", -> # default is 3
         it "should include four-word result for five-words input", ->
           result = (@permute "a|b|c|d|e".split('|'), 4).sort()
           expect(result).to.include 'abcd'
 
-        it "should not include five-word result for five-words input", ->
-          result = (@permute "a|b|c|d|e".split('|'), 4).sort()
+        it "should not include five-words result for seven-words input", ->
+          result = (@permute "a|b|c|d|e|f|g".split('|'), 4).sort()
           expect(result).to.not.include 'abcde'
+
+      describe "with degree 10", ->
+        it "should not takes longer than 100ms for a 20-words input", ->
+          # reference machine:
+          # MBP 2GHz Intel Core i7
+          # 4GB 1333 MHz DDR3
+          @timeout(100)
+
+          letters = "abcdefghijklmnopqrst" # 20 chars
+          words = (letters[i] for i in [0 .. letters.length - 1])
+
+          t = process.hrtime()
+          result = @permute words, 10
+          t = process.hrtime(t)
+
+          expect(result).to.include "cdefghijkl" # 10 degree result
+          expect(t[0]).to.be.lt 1 # seconds
+          expect(t[1]).to.be.lt 1000000 * 100 # nanoseconds
 
     describe 'permuteTypos()', ->
       before -> @permute = @var.permuteTypos
