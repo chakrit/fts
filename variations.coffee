@@ -28,7 +28,7 @@ module.exports = do ->
       return [words[0]] if words.length == 1
       degree ?= 3
 
-      (_permute = (words, idx) ->
+      return (permute = (words, idx) ->
         return [] if idx == words.length
 
         word = words[idx]
@@ -36,14 +36,13 @@ module.exports = do ->
 
         # generate permutation from current word down
         from = idx + 1
-        to = Math.min(words.length, degree) - 1
-
+        to = Math.min(words.length, idx + degree) - 1
         for i in [from .. to] by 1
           word += words[i]
           results.push word
 
         # add results from next level
-        results.push.apply results, _permute(words, idx + 1)
+        results.push.apply results, permute(words, idx + 1)
         return results
 
       )(words, 0)

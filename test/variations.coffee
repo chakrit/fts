@@ -76,10 +76,12 @@ do ->
         result = (@permute "a|b|c|d|e".split('|')).sort()
         expect(result).to.not.include 'abcd'
 
-      describe "with degree 4", -> # default is 3
-        before -> @degree = 4
-        after -> delete @degree
+      describe "with degree 2", ->
+        it "should include the last two-words combined for three-words input", ->
+          result = (@permute "a|b|c|d|e".split('|'), 2).sort()
+          expect(result).to.include 'de'
 
+      describe "with degree 4", -> # default is 3
         it "should include four-word result for five-words input", ->
           result = (@permute "a|b|c|d|e".split('|'), 4).sort()
           expect(result).to.include 'abcd'
