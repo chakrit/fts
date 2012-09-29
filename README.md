@@ -120,6 +120,26 @@ Queries the index using the string `query`.
 These APIs are provided in case you need more fine-grained control of the indexes
 but should not need to to be used in most cases.
 
+#### indexer.degree.words = 3
+
+Get/set the degree to which fts will permute words. Defaults to 3.
+
+Example: Permuting `"quick brown fox"` with degree 2 gives `["quickbrown", "brownfox"]`
+querying with `"brownfox"` will returns the original string.
+
+Higher degree enables broader search term matches but will require more memory
+and CPU during `index()` calls.
+
+#### indexer.degree.typos = 5
+
+Get/set the degree to which fts will permute typos. Defaults to 5.
+
+Example: Permuting `"search"` with degree 2 gives 22 results including `"serc"` and `"srch"`
+querying with any 2 letters missing from the string will match the document.
+
+Higher degree enables broader search term matches but will require more memory
+and CPU during `index()` calls.
+
 #### indexer.addKey( id, key, weight, callback )
 
 Adds `id` to search key `key` with weight `weight` and then calls `callback` (optional).
