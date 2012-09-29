@@ -43,7 +43,7 @@ module.exports = do ->
 
     permuteTypos: (word, degree) ->
       return [] if !word? || word.length == 0
-      degree ?= 7 # so we can more results from partial match
+      degree ?= 5 # so we can more results from partial match
 
       # cache everything early on so we don't slow down during tight loops
       uniq = { }
@@ -52,8 +52,8 @@ module.exports = do ->
 
       # builds result from a degree by using result from previous degree
       for i in [1 .. degree] by 1
-
         results_ = []
+
         for result in prevDegree
           for i in [0 .. result.length - 1] by 1
             typo = result.substr 0, i
