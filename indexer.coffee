@@ -57,12 +57,26 @@ module.exports = do ->
       assert id, 'id argument required'
       assert items, 'items argument required'
 
+      # overloads/optionals
       items = [items] if typeof items != 'array'
-      indexes = []
+      cb ?= ->
+
+      # NOTE: Real-world tests indicate that having huge arrays are not
+      # very efficient in v8, for example we will hit this issue:
+      #
+      #     http://code.google.com/p/v8/issues/detail?id=2131
+      #
+      # if we have `indexes = []` and was doing `push()/pop()` instead
+      # of just using the hash we have here since for some string
+      # the number of items could easily sky rocket to more than 30k+
+      # TODO: Elimite the need to buffer altogether. Possible?
+      indexes = { }
+
+      include = (word, score) ->
+        return if indexes[word] and (indexes[word] > score)
+        indexes[word] = score
 
       # TODO: Allow configuration of scores?
-      # TODO: Actually add to index
-      # TODO: Watch out for duplicate items (possible for typos)
       for item in items
         # add each word to the index
         # [1000..800] by -50 for each word
@@ -71,7 +85,7 @@ module.exports = do ->
         words = vars.splitWords(item)
         for word in words
           score -= 100 if score > 800
-          indexes.push [id, word, score]
+          include word, score
 
         # add typo variation of the words with lower score
         # [600..400] by -50 word and -5 for typo
@@ -83,7 +97,7 @@ module.exports = do ->
           typos = vars.permuteTypos word, @degree.typos
           for typo in typos
             typoScore -= 5 if typoScore > 400
-            indexes.push [id, typo, typoScore]
+            include typo, typoScore
 
         # add multi-words variations to index (useful for Thai searches)
         # [800..600] by -50 permutation
@@ -92,7 +106,7 @@ module.exports = do ->
         perms = vars.permuteWords words, @degree.words
         for perm in perms
           score -= 50 if score > 600
-          indexes.push [perm, score, id]
+          include perm, score
 
         # also account for typos of permuted words
         # [400..200] by -50 perm and -5 for typo
@@ -104,11 +118,25 @@ module.exports = do ->
           typos = vars.permuteTypos perm, @degree.typos
           for typo in typos
             typoScore -= 5 if typoScore > 200
-            indexes.push [id, typo, typoScore]
+            include typo, typoScore
 
-      iterator = (tuple, next) =>
-        this.addKey.call(this, tuple[0], tuple[1], tuple[2], next)
-      a.forEach(indexes, iterator, cb)
+      addOne = (e) =>
+        return cb(e) if e?
+
+        # enumerator trick to get one key from index
+        firstKey = null
+        for key in indexes
+          firstKey = key
+          break
+
+        return cb() if !firstKey? # no more key
+
+        score = indexes[firstKey]
+        delete indexes[firstKey]
+
+        @addKey id, firstKey, score, addOne
+
+      addOne()
 
     clear: (cb) =>
       ensureSetup.call(this)
