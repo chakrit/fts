@@ -5,4 +5,5 @@
 * Properly deal with punctuations
 * Streaming mode.
 * redis-cli --pipe support for loading large indexes.
+* Search quality tests.
 
