@@ -61,82 +61,63 @@ module.exports = do ->
       items = [items] if typeof items != 'array'
       cb ?= ->
 
-      # NOTE: Real-world tests indicate that having huge arrays are not
-      # very efficient in v8, for example we will hit this issue:
-      #
-      #     http://code.google.com/p/v8/issues/detail?id=2131
-      #
-      # if we have `indexes = []` and was doing `push()/pop()` instead
-      # of just using the hash we have here since for some string
-      # the number of items could easily sky rocket to more than 30k+
-      # TODO: Elimite the need to buffer altogether. Possible?
-      indexes = { }
-
-      include = (word, score) ->
-        return if indexes[word] and (indexes[word] > score)
-        indexes[word] = score
+      # callback generation helper
+      # NOTE: We always add keys in the order of decreasing score
+      #   so duplicate keys should not pose problems as we want
+      #   key with higher score to remain as-is and not overridden
+      #   by lower score key adds (which is the behavior of zadd anyway)
+      newTask = (word, score) =>
+        (cb) => @addKey id, word, score, cb
 
       # TODO: Allow configuration of scores?
-      for item in items
-        # add each word to the index
-        # [1000..800] by -50 for each word
-        # first word > last word
-        score = 1100
-        words = vars.splitWords(item)
-        for word in words
-          score -= 100 if score > 800
-          include word, score
+      processTypos = (word, score, cb) =>
+        typos = vars.permuteTypos word, @degree.typos
 
-        # add typo variation of the words with lower score
-        # [600..400] by -50 word and -5 for typo
-        score = 650
-        for word in words
-          score -= 50 if score > 400
-          typoScore = score
+        tasks = for typo in typos
+          score -= 5 if score > 200
+          newTask typo, score
 
-          typos = vars.permuteTypos word, @degree.typos
-          for typo in typos
-            typoScore -= 5 if typoScore > 400
-            include typo, typoScore
+        return a.series(tasks, cb)
 
-        # add multi-words variations to index (useful for Thai searches)
-        # [800..600] by -50 permutation
-        # first permutation > last permutation
+      processPerms = (words, cb) =>
         score = 850
         perms = vars.permuteWords words, @degree.words
-        for perm in perms
+
+        tasks = for perm in perms
           score -= 50 if score > 600
-          include perm, score
+          newTask perm, score
 
-        # also account for typos of permuted words
-        # [400..200] by -50 perm and -5 for typo
         score = 450
-        for perm in perms
-          score -= 50 if score > 200
-          typoScore = score
+        tasks.push.apply tasks,
+          for perm in perms
+            score -= 50 if score > 200
+            do (perm, score) ->
+              (cb) -> processTypos(perm, score, cb)
 
-          typos = vars.permuteTypos perm, @degree.typos
-          for typo in typos
-            typoScore -= 5 if typoScore > 200
-            include typo, typoScore
+        return a.series(tasks, cb)
 
-      addOne = (e) =>
-        return cb(e) if e?
+      processItem = (item, cb) =>
+        score = 1100
+        words = vars.splitWords(item)
 
-        # enumerator trick to get one key from index
-        firstKey = null
-        for key in indexes
-          firstKey = key
-          break
+        tasks = for word in words
+          score -= 50 if score > 400
+          newTask word, score
 
-        return cb() if !firstKey? # no more key
+        score = 650
+        tasks.push.apply tasks,
+          for word in words
+            score -= 50 if score > 400
+            do (word, score) ->
+              (cb) -> processTypos(word, score, cb)
 
-        score = indexes[firstKey]
-        delete indexes[firstKey]
+        return a.series(tasks, cb)
 
-        @addKey id, firstKey, score, addOne
+      # execute the tasks
+      tasks = for item in items
+        (cb) -> processItem(item, cb)
 
-      addOne()
+      a.series tasks, cb
 
     clear: (cb) =>
       ensureSetup.call(this)
