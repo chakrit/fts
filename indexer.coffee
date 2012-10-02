@@ -111,6 +111,7 @@ module.exports = do ->
             do (word, score) ->
               (cb) -> processTypos(word, score, cb)
 
+        tasks.push (cb) -> processPerms(words, cb)
         return a.series(tasks, cb)
 
       # execute the tasks
