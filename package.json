@@ -1,6 +1,6 @@
 {
   "name": "fts",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Fast fuzzy unicode full-text-search backed with redis.",
   "main": "index.js",
   "scripts": {
