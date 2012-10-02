@@ -205,7 +205,7 @@ do ->
           # at the moment of async.forEachLimit call.
           # So this is somewhat a memory consumption test in general.
           it 'should not crash when indexing string "สำนักงานปลัดสำนักนายกรัฐมนตรี"', (done) ->
-            @timeout 100
+            @timeout 100000
             @index 123, 'สำนักงานปลัดสำนักนายกรัฐมนตรี', (e) =>
               return done(e) if e?
               done() # expect to just not crash

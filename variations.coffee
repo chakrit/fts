@@ -4,7 +4,9 @@
 module.exports = do ->
 
   _ = require 'underscore'
+  assert = require 'assert'
   splitWords = require 'icu-wordsplit'
+
   normalize = do ->
     StringPrep = require('node-stringprep').StringPrep
     prep = new StringPrep('nameprep')
@@ -12,8 +14,10 @@ module.exports = do ->
     _.bindAll(prep)
     return prep.prepare
 
+  nextTick = process.nextTick
+
   return vars =
-    normalizeWords: (words) ->
+    normalizeWords: (words, cb) ->
       return [] if !words? || words.length == 0
       words = [words] if typeof words == 'string'
 
@@ -40,6 +44,17 @@ module.exports = do ->
           results.push word
 
       return results
+
+    permuteWordsAsync: (words, degree, cb, completeCb) ->
+      assert typeof degree == 'number', 'degree must be a number'
+      assert (words instanceof Array) || typeof words == 'string', 'words must be a string or an array'
+      return (nextTick -> cb(null, [])) if !words || !words.length
+      return (nextTick -> cb(null, [words[0]])) if words.length == 1
+
+      nextTick ->
+        cb null, []
+        nextTick ->
+          completeCb()
 
     permuteTypos: (word, degree) ->
       return [] if !word? || word.length == 0
